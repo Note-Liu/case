@@ -1,0 +1,27 @@
+from openpyxl import load_workbook
+from openpyxl.drawing.image import Image
+import os 
+
+def insert_img_to_excel(filename,by_col,to_col,img_folder):
+    '''
+    filename:excel文件路径
+    by_col:依靠列(A,B,C...),依靠A列中的字符串找到对应图片
+    to_col:插入列(A,B,C...)
+    img_folder:图片所在文件夹
+    '''
+    wb = load_workbook(filename)
+    ws = wb.active
+    for i,c in enumerate(ws[by_col],start=1):  #excel的表头是第一行，不是第0行，需要从1开始
+        #print(i,c.value)
+        img_ffn = os.path.join(img_folder,c.value+'.png')
+        #print(i,img_ffn)
+        try:
+            ws.add_image(img=Image(img_ffn),
+                        anchor=to_col+str(i))
+        except:
+            print(c.value,'匹配不到图片')
+    wb.save(filename)
+
+
+if __name__ == "__main__":
+    insert_img_to_excel('1.xlsx','A','B',img_folder="/aa/bb")
