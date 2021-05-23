@@ -1,0 +1,161 @@
+一：
+
+import xlrd
+import openpyxl
+import os
+from xlutils.copy import copy
+from openpyxl import load_workbook
+from openpyxl import Workbook
+from openpyxl.drawing.image import Image
+from openpyxl.utils import get_column_letter
+
+
+def write_append_excel(video_name,img1,img2,id,img3,time,score):
+    '''
+    video_name:
+    img1:
+    img2:
+    id:
+    img3:
+    time:
+    score:
+    '''
+    #excel文件路径
+    path = "/home/liu/Desktop/2.xlsx"
+    #表头
+    dic={1:"video_name",2:"img1",3:"img2",4:"id",5:"img3",6:"time",7:"score"}  
+    img1 = os.path.join('/home/liu/Desktop',img1)
+    img2 = os.path.join('/home/liu/Desktop',img2)
+    img3 = os.path.join('/home/liu/Desktop',img3)
+    #excel宽高
+    column_width = 100
+    row_height = 100
+    wb = openpyxl.load_workbook(path)
+    #sheetnames = wb.get_sheet_names()
+    #ws = wb.get_sheet_by_name(sheetnames[0])
+    sheetnames = wb.sheetnames
+    ws = wb[sheetnames[0]]
+    ws = wb.active
+    nrows = ws.max_row
+    #print(nrows)
+    if nrows==1:
+        for i,j in dic.items():
+            ws.cell(nrows,i).value = j
+
+    ws.cell(nrows+1, 1).value = video_name
+    ws.cell(nrows+1, 4).value = id
+    ws.cell(nrows+1, 6).value = time
+    ws.cell(nrows+1, 7).value = score
+
+    newSize = (100,100) 
+    ws.column_dimensions["A"].width = newSize[0] * 0.14
+    ws.row_dimensions[nrows+1].height = newSize[0]*0.78
+    
+    img1 = Image(img1)
+    #print("old img1.width",img1.width)
+    img1.width,img1.height = newSize
+    #print("new img1.width",img1.width)
+    ws.add_image(img1,'B'+str(nrows+1))
+
+    img2 = Image(img2)
+    img2.width,img2.height = newSize
+    ws.add_image(img2,'C'+str(nrows+1))
+
+    img3 = Image(img3)
+    img3.width,img3.height = newSize
+    ws.add_image(img3,'E'+str(nrows+1))
+
+    wb.save(path)
+
+if __name__ == "__main__":
+    #param:video_name,img1,img2,id,img3,time,score
+    write_append_excel("video_name","46.jpg","22.jpg",1,"23.jpg","2021-5-21",0.5)
+
+
+二：
+
+import openpyxl
+import os
+from openpyxl import load_workbook
+from openpyxl import Workbook
+from openpyxl.drawing.image import Image
+from openpyxl.utils import get_column_letter
+
+
+class WAExcel:
+    def __init__(self,video_name,img1,img2,id,img3,time,score):
+        #super().__init__()
+        self.video_name = video_name
+        self.img1 = img1
+        self.img2 = img2
+        self.id = id 
+        self.img3 = img3
+        self.time = time
+        self.score = score
+
+
+    def write_append_excel(self):#video_name,img1,img2,id,img3,time,score
+        '''
+        video_name:
+        img1:
+        img2:
+        id:
+        img3:
+        time:
+        score:
+        '''
+        #excel文件路径
+        path = "/home/liu/Desktop/2.xlsx"
+        #表头
+        dic={1:"video_name",2:"img1",3:"img2",4:"id",5:"img3",6:"time",7:"score"}  
+        img1 = os.path.join('/home/liu/Desktop',self.img1)
+        img2 = os.path.join('/home/liu/Desktop',self.img2)
+        img3 = os.path.join('/home/liu/Desktop',self.img3)
+        #excel宽高
+        column_width = 100
+        row_height = 100
+        wb = openpyxl.load_workbook(path)
+        #sheetnames = wb.get_sheet_names()
+        #ws = wb.get_sheet_by_name(sheetnames[0])
+        sheetnames = wb.sheetnames
+        ws = wb[sheetnames[0]]
+        ws = wb.active
+        nrows = ws.max_row
+        #print(nrows)
+        if nrows==1:
+            for i,j in dic.items():
+                ws.cell(nrows,i).value = j
+
+        ws.cell(nrows+1, 1).value = self.video_name
+        ws.cell(nrows+1, 4).value = self.id
+        ws.cell(nrows+1, 6).value = self.time
+        ws.cell(nrows+1, 7).value = self.score
+
+        newSize = (100,100) 
+        ws.column_dimensions["A"].width = newSize[0] * 0.14
+        ws.row_dimensions[nrows+1].height = newSize[0]*0.78
+        
+        img1 = Image(img1)
+        img1.width,img1.height = newSize
+        ws.add_image(img1,'B'+str(nrows+1))
+
+        img2 = Image(img2)
+        img2.width,img2.height = newSize
+        ws.add_image(img2,'C'+str(nrows+1))
+
+        img3 = Image(img3)
+        img3.width,img3.height = newSize
+        ws.add_image(img3,'E'+str(nrows+1))
+
+        wb.save(path)
+'''
+if __name__ == "__main__":
+    #param:video_name,img1,img2,id,img3,time,score
+    write_append_excel("video_name","46.jpg","22.jpg",1,"23.jpg","2021-5-21",0.5)
+'''
+
+if __name__ == "__main__":
+    test = WAExcel("video_name","46.jpg","22.jpg",1,"23.jpg","2021-5-21",0.7)
+    test.write_append_excel()
+    test2 = WAExcel("video_name","46.jpg","22.jpg",1,"23.jpg","2021-5-21",0.8)
+    test2.write_append_excel()
