@@ -1,0 +1,105 @@
+import os
+from xml.dom import minidom
+from PIL import Image
+
+last_name = "NULL"
+folder_path = "C:/Users/liu/Desktop/data/"
+w = 512
+h = 512
+d = 3
+dict = {}
+with open("C:/Users/liu/Desktop/GroundTruth.txt") as f:
+    for line in f.readlines():
+        #print(line)
+        line = line.strip()
+        line = line.split(";")
+        name = line[0]
+        #print(name)
+
+        if name in dict:
+            dict[name] +=1
+        else:
+            dict[name] = 1
+    #print(dict)        #  '00000.png': 1,        '00017.png': 1, '00018.png': 2,
+        
+with open("C:/Users/liu/Desktop/GroundTruth.txt") as f:
+    for object_name in dict.keys():
+        print(object_name)
+        #print(dict[object_name])
+
+        filename_path = object_name.split(".")[0]               #图片名字序号
+        path_path = os.path.join(os.getcwd(), filename_path)
+        print(path_path)
+        doc = minidom.Document()                               # 创建DOM树对象
+        annotation = doc.createElement('annotation')  # 创建子节点
+        doc.appendChild(annotation)
+        folder = doc.createElement('folder')
+        folder.appendChild(doc.createTextNode(folder_path))  # 文本节点作为floder的子节点
+        annotation.appendChild(folder)  # folder作为annotation的子节点
+        filename = doc.createElement('filename')
+        filename.appendChild(doc.createTextNode(filename_path))
+        annotation.appendChild(filename)
+        filename = doc.createElement('path')
+        filename.appendChild(doc.createTextNode(path_path))
+        annotation.appendChild(filename)
+        source = doc.createElement('source')
+        database = doc.createElement('database')
+        database.appendChild(doc.createTextNode("Unknown"))
+        source.appendChild(database)
+        annotation.appendChild(source)
+        size = doc.createElement('size')
+        width = doc.createElement('width')
+        width.appendChild(doc.createTextNode("%d" % w))
+        size.appendChild(width)
+        height = doc.createElement('height')
+        height.appendChild(doc.createTextNode("%d" % h))
+        size.appendChild(height)
+        depth = doc.createElement('depth')
+        depth.appendChild(doc.createTextNode("%d" % d))
+        size.appendChild(depth)
+        annotation.appendChild(size)
+        segmented = doc.createElement('segmented')
+        segmented.appendChild(doc.createTextNode("0"))
+        annotation.appendChild(segmented)
+
+        for i in range(dict[object_name]):
+            line = f.readline()
+            print(line)
+            line = line.strip().split(";")
+            #print(line[0])
+
+            xmin, ymin, xmax, ymax = line[1], line[2], line[3], line[4]
+            # category = line[5]
+            object = doc.createElement('object')
+            nm = doc.createElement('name')
+            print(xmin)
+            nm.appendChild(doc.createTextNode(str(line[5])))
+            object.appendChild(nm)
+            pose = doc.createElement('pose')
+            pose.appendChild(doc.createTextNode("Unspecified"))
+            object.appendChild(pose)
+            truncated = doc.createElement('truncated')
+            truncated.appendChild(doc.createTextNode("1"))
+            object.appendChild(truncated)
+            difficult = doc.createElement('difficult')
+            difficult.appendChild(doc.createTextNode("0"))
+            object.appendChild(difficult)
+            bndbox = doc.createElement('bndbox')
+            xmin = doc.createElement('xmin')
+            xmin.appendChild(doc.createTextNode(str(line[1])))
+            bndbox.appendChild(xmin)
+            ymin = doc.createElement('ymin')
+            ymin.appendChild(doc.createTextNode(str(line[2])))
+            # print(str(bbox["ymin"]))
+            bndbox.appendChild(ymin)
+            xmax = doc.createElement('xmax')
+            xmax.appendChild(doc.createTextNode(str(line[3])))
+            bndbox.appendChild(xmax)
+            ymax = doc.createElement('ymax')
+            ymax.appendChild(doc.createTextNode(str(line[4])))
+            bndbox.appendChild(ymax)
+            object.appendChild(bndbox)
+            annotation.appendChild(object)
+
+        savefile = open(r'C:/Users/liu/Desktop/data/xml3/' + str(filename_path) + ".xml", 'w',encoding='utf-8')
+        savefile.write(doc.toprettyxml())
